@@ -21,7 +21,7 @@
         (range 1 9)
         (range 10 90 10)))))
 
-; Core logic
+; Transformation logic
 
 (defn transformation-func [t]
   (fn [arrangement]
@@ -55,3 +55,9 @@
   (a [1 4 2 1] [5 7 6 5] [10 40 30 10] [50 80 60 50])
   (c [1 4 2 3 1] [5 7 5] [10 30 20 40 10] [60 70 60])
   (s [1 7 3 1] [2 5 6 2] [4 8 4] [10 40 10] [20 30 20] [50 60 50] [70 80 70]))
+
+(defn transform [ts arrangement]
+  (if (empty? ts)
+    arrangement
+    (let [t ((last ts) transformations)]
+      (t (transform (butlast ts) arrangement)))))
