@@ -61,3 +61,40 @@
     arrangement
     (let [t ((last ts) transformations)]
       (t (transform (butlast ts) arrangement)))))
+
+; From clojure-contrib.combinatorics
+
+(defn cartesian-product
+  "All the ways to take one item from each sequence"
+  [& seqs]
+  (let [v-original-seqs (vec seqs)
+        step
+        (fn step [v-seqs]
+          (let [increment
+                (fn [v-seqs]
+                  (loop [i (dec (count v-seqs)), v-seqs v-seqs]
+                    (if (= i -1) nil
+                        (if-let [rst (next (v-seqs i))]
+                          (assoc v-seqs i rst)
+                          (recur (dec i) (assoc v-seqs i (v-original-seqs i)))))))]
+            (when v-seqs
+              (cons (map first v-seqs)
+                    (lazy-seq (step (increment v-seqs)))))))]
+    (when (every? first seqs)
+      (lazy-seq (step v-original-seqs)))))
+
+(defn selections
+  "All the ways of taking n (possibly the same) elements from the sequence of items"
+  [items n]
+  (apply cartesian-product (take n (repeat items))))
+
+; Create sequences of transformations
+
+(defn transformation-sequences [& ts]
+  (apply concat
+    (for [i (iterate inc 1)]
+      (selections ts i))))
+
+; Change the predicate here to test whether the transformations provide the needed arrangement
+(take-while #(< (count %) 6)
+  (apply transformation-sequences (keys transformations))))
