@@ -96,5 +96,9 @@
       (selections ts i))))
 
 ; Change the predicate here to test whether the transformations provide the needed arrangement
-(take-while #(< (count %) 6)
-  (apply transformation-sequences (keys transformations))))
+(def this-one
+  (first
+    (drop-while #(< (count %) 5)
+    (apply transformation-sequences (keys transformations)))))
+
+(println this-one)
