@@ -3,7 +3,13 @@ import sys
 
 
 def transformation(*pieces):
-    return {i + 1: val for i, val in enumerate(pieces)}
+    transformation_matrix = {i + 1: val for i, val in enumerate(pieces)}
+
+    def transform(arrangement):
+        return {key: transformation_matrix.get(val, val)
+                for key, val in arrangement.iteritems()}
+
+    return transform
 
 
 transformations = {
@@ -21,16 +27,8 @@ transformations = {
 base = {i: i for i in range(1, 17)}
 
 
-def transform(transformation_matrix, original):
-    return {key: transformation_matrix.get(val, val)
-            for key, val in original.iteritems()}
-
-
 def chain(matrix, *transformations):
-    for t in transformations:
-        matrix = transform(t, matrix)
-
-    return matrix
+    return reduce(lambda m, t: t(m), (matrix,) + transformations)
 
 
 def test(real, required):
