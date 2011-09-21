@@ -12,7 +12,8 @@
 
 (def needed
   (hash-map-pairs
-    (map #(str/split % #":") *command-line-args*)))
+    (map #(for [item (str/split % #":")] (Integer/parseInt item))
+      *command-line-args*)))
 
 (def base-arrangement
   (apply hash-map-pairs
@@ -95,6 +96,15 @@
     (for [i (iterate inc 1)]
       (selections ts i))))
 
-; Change the predicate here to test whether the transformations provide the needed arrangement
-(take-while #(< (count %) 6)
-  (apply transformation-sequences (keys transformations))))
+(defn satisfies-needed [ts]
+  (let [result (transform ts base-arrangement)]
+    (every? true?
+      (for [piece (keys needed)]
+        (= (get needed piece) (get result piece))))))
+
+(def this-one
+  (first
+    (drop-while #(not (satisfies-needed %))
+      (apply transformation-sequences (keys transformations)))))
+
+(println (apply str this-one))
