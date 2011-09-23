@@ -3,9 +3,12 @@ import sys
 
 
 def transformation(name, d):
-    def _transformation(piece):
-        return d[piece]
+    expected = set(range(1, 9) + range(10, 90, 10))
 
+    if set(d.iterkeys()) - expected or set(d.itervalues()) - expected:
+        raise ValueError('invalid transformation for ' + name)
+
+    _transformation = lambda piece: d[piece]
     _transformation.__name__ = name
     return _transformation
 
@@ -114,14 +117,14 @@ c = transformation('c', {
     6: 6,
     7: 5,
     8: 8,
-    10: 40,
-    20: 20,
-    30: 10,
-    40: 30,
-    50: 80,
-    60: 50,
-    70: 70,
-    80: 60,
+    10: 30,
+    20: 40,
+    30: 20,
+    40: 10,
+    50: 50,
+    60: 70,
+    70: 60,
+    80: 80,
 })
 
 s = transformation('s', {
