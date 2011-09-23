@@ -1,5 +1,6 @@
-import qualified Data.Map as Map
+import System (getArgs)
 
+type Result = [(Int,Int)]
 type Move = Int -> Int
 type Path = [Transform]
 data Transform = Transform { name :: String
@@ -9,6 +10,32 @@ data Transform = Transform { name :: String
 
 instance Show Transform where
     show (Transform name _) = show name
+
+
+main :: IO ()
+main = do
+    args <- getArgs
+    let goal = read (args !! 0) :: Result
+    putStrLn $ show (find goal)
+
+pathsOfLen :: Int -> [Path]
+pathsOfLen n = sequence (replicate n transformations)
+
+allPaths = concat [pathsOfLen n | n <- [1..]]
+
+transform :: Path -> Move
+transform []     = (\a -> a)
+transform (x:xs) = move x . transform xs
+
+filterMoves :: [Path] -> Int -> Int -> [Path]
+filterMoves pool start end = filter (\x -> transform x start == end) pool
+
+reach :: Result -> [Path] -> [Path]
+reach [] _ = allPaths
+reach (x:xs) pool = filterMoves (reach xs pool) (fst x) (snd x)
+
+find :: Result -> Path
+find x = head $ reach x allPaths
 
 
 t' :: Move
@@ -149,17 +176,3 @@ transformations = [ Transform "T" t'
                   , Transform "c b c b^-1 c" cbcbc
                   , Transform "T^2 B^2" tb'
                   ]
-
-pathsOfLen :: Int -> [Path]
-pathsOfLen n = sequence (replicate n transformations)
-
-transform :: Path -> Move
-transform []     = (\a -> a)
-transform (x:xs) = move x . transform xs
-
-try :: [Path] -> Int -> Int -> Maybe Path
-try [] _ _ = Nothing
-try (x:xs) start end = if transform x start == end
-                       then Just x
-                       else try xs start end
-

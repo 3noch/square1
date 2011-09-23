@@ -1,0 +1,8 @@
+To build Haskell implementation:
+
+    $ ghc -o solve --make square1.hs
+
+To run, for example:
+
+    $ ./solve "[(1,1),(10,30)]"
+
