@@ -1,6 +1,6 @@
 import System (getArgs)
 
-type Result = [(Int,Int)]
+type Mapping = [(Int,Int)]
 type Move = Int -> Int
 type Path = [Transform]
 data Transform = Transform { name :: String
@@ -15,27 +15,42 @@ instance Show Transform where
 main :: IO ()
 main = do
     args <- getArgs
-    let goal = read (args !! 0) :: Result
+    let goal = read (args !! 0) :: Mapping
     putStrLn $ show (find goal)
 
 pathsOfLen :: Int -> [Path]
 pathsOfLen n = sequence (replicate n transformations)
 
-allPaths = concat [pathsOfLen n | n <- [1..]]
-
 transform :: Path -> Move
 transform []     = (\a -> a)
 transform (x:xs) = move x . transform xs
 
-filterMoves :: [Path] -> Int -> Int -> [Path]
-filterMoves pool start end = filter (\x -> transform x start == end) pool
+filterMoves :: Int -> Int -> [Path] -> [Path]
+filterMoves start end = filter (\x -> transform x start == end)
 
-reach :: Result -> [Path] -> [Path]
-reach [] _ = allPaths
-reach (x:xs) pool = filterMoves (reach xs pool) (fst x) (snd x)
+reach' :: Mapping -> [Path] -> [Path]
+reach' [] _ = concat [pathsOfLen n | n <- [1..]]
+reach' (x:xs) pool = filterMoves (fst x) (snd x) (reach' xs pool)
 
-find :: Result -> Path
-find x = head $ reach x allPaths
+reach :: Mapping -> [Path]
+reach x = reach' x (reach' [] [])
+
+find :: Mapping -> Path
+find x = head $ reach x
+
+
+
+
+transformations = [ Transform "T" t'
+                  , Transform "B" b'
+                  , Transform "t" t
+                  , Transform "b" b
+                  , Transform "a" a
+                  , Transform "c" c
+                  , Transform "s" s
+                  , Transform "c b c b^-1 c" cbcbc
+                  , Transform "T^2 B^2" tb'
+                  ]
 
 
 t' :: Move
@@ -164,15 +179,3 @@ tb' 60 = 20
 tb' 70 = 10
 tb' 80 = 40
 tb'  x =  x
-
-
-transformations = [ Transform "T" t'
-                  , Transform "B" b'
-                  , Transform "t" t
-                  , Transform "b" b
-                  , Transform "a" a
-                  , Transform "c" c
-                  , Transform "s" s
-                  , Transform "c b c b^-1 c" cbcbc
-                  , Transform "T^2 B^2" tb'
-                  ]

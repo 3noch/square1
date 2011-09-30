@@ -1,2 +1,6 @@
-*.swp
+solve
+*.hi
+*.o
+*.prof
 *.swo
+*.swp
