@@ -1,7 +1,14 @@
-all: solve
+SOURCE = square1.hs
+EXE = solve
+ARTIFACTS = $(wildcard $(EXE)) $(wildcard *.hi) $(wildcard *.o) $(wildcard *.prof)
+
+all: $(EXE)
 
 clean:
-	rm solve *.hi *.o *.prof
+	rm $(ARTIFACTS)
 
-solve: square1.hs
-	ghc -o $(@) --make square1.hs
+$(EXE): $(SOURCE)
+	ghc -o $(@) --make $(^)
+
+profiled: $(SOURCE)
+	ghc -prof -auto-all -rtsopts -o $(EXE) $(^)
