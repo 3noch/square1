@@ -5,10 +5,10 @@ ARTIFACTS = $(wildcard $(EXE)) $(wildcard *.hi) $(wildcard *.o) $(wildcard *.pro
 all: $(EXE)
 
 clean:
-	rm $(ARTIFACTS)
+	rm -f $(ARTIFACTS)
 
 $(EXE): $(SOURCE)
-	ghc -o $(@) --make $(^)
+	ghc -O2 -o $(@) --make $(^)
 
 profiled: $(SOURCE)
 	ghc -prof -auto-all -rtsopts -o $(EXE) $(^)
