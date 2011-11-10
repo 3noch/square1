@@ -1,12 +1,11 @@
-===========================
-1. HASKELL
-===========================
+Haskell
+=======
 
 
-BUILDING
+Building
 --------
 
-To build Haskell implementation:
+To build the [Haskell](http://haskell.org) implementation:
 
     $ make
 
@@ -15,7 +14,7 @@ To run, for example:
     $ ./solve "[(1,1),(10,30)]"
 
 
-PROFILING
+Profiling
 ---------
 
 To compile the Haskell implementation with profiling enabled, do this:
@@ -27,8 +26,8 @@ Then run the program like this:
     $ ./solve ... +RTS -p
 
 
-KILLER PROBLEM
---------------
+The Killer Problem
+------------------
 
 The killer problem is this:
 
