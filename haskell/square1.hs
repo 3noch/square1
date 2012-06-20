@@ -1,4 +1,4 @@
-import System (getArgs)
+import System.Environment (getArgs)
 
 type Mapping = [(Int,Int)]
 type Move = Int -> Int
@@ -11,11 +11,14 @@ data Transform = Transform { name :: String
 instance Show Transform where
     show (Transform name _) = show name
 
+instance Eq Transform where
+    Transform a _ == Transform b _ = a == b
+
 
 main :: IO ()
 main = do
-    args <- getArgs
-    let goal = read (args !! 0) :: Mapping
+    (arg:_) <- getArgs
+    let goal = read arg :: Mapping
     putStrLn $ show (find goal)
 
 pathsOfLen :: Int -> [Path]
@@ -37,8 +40,6 @@ reach x = reach' x (reach' [] [])
 
 find :: Mapping -> Path
 find x = head $ reach x
-
-
 
 
 transformations = [ Transform "T" t'

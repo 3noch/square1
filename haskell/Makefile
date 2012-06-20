@@ -8,7 +8,7 @@ clean:
 	rm -f $(ARTIFACTS)
 
 $(EXE): $(SOURCE)
-	ghc -O2 -o $(@) --make $(^)
+	ghc -O3 -o $(@) --make $(^)
 
 profiled: $(SOURCE)
 	ghc -prof -auto-all -rtsopts -o $(EXE) $(^)
