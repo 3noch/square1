@@ -22,17 +22,16 @@ main = do
     putStrLn $ show (find goal)
 
 pathsOfLen :: Int -> [Path]
-pathsOfLen n = sequence (replicate n transformations)
+pathsOfLen n = sequence' (replicate n transformations)
 
 transform :: Path -> Move
-transform []     = (\a -> a)
-transform (x:xs) = move x . transform xs
+transform = foldr (\left right -> move left . right) id
 
 filterMoves :: Int -> Int -> [Path] -> [Path]
 filterMoves start end = filter (\x -> transform x start == end)
 
 reach' :: Mapping -> [Path] -> [Path]
-reach' [] _ = concat [pathsOfLen n | n <- [1..]]
+reach' [] _ = concat [pathsOfLen n | n <- [0..]]
 reach' (x:xs) pool = filterMoves (fst x) (snd x) (reach' xs pool)
 
 reach :: Mapping -> [Path]
@@ -40,6 +39,20 @@ reach x = reach' x (reach' [] [])
 
 find :: Mapping -> Path
 find x = head $ reach x
+
+{- To improve performace, Prelude's `sequence` doesn't release memory
+   as it generates each permutation. We can't afford to take up that
+   much memory, so `sequence'` does not share its memory between
+   permutations.
+
+sequence ms = foldr k (return []) ms
+    where k m m' = do x <- m
+                      xs <- m'
+                      return (x:xs)
+-}
+sequence' :: [[a]] -> [[a]]
+sequence' [] = [[]]
+sequence' (x:xs) = concatMap (\v -> concatMap (\vs -> [v:vs]) (sequence' xs)) x
 
 
 transformations = [ Transform "T" t'
@@ -52,7 +65,6 @@ transformations = [ Transform "T" t'
                   , Transform "c b c b^-1 c" cbcbc
                   , Transform "T^2 B^2" tb'
                   ]
-
 
 t' :: Move
 t'  3 =  6
